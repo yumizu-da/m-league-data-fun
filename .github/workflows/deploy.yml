@@ -4,20 +4,10 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      app_name:
-        description: App name to deploy
-        required: true
-        default: m-league-data-fun-app
-      port:
-        description: 'Port number to deploy'
-        required: true
-        type: number
-        default: 8501
 
 env:
-  IMAGE_NAME: asia-northeast2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.SERVICE_NAME }}/${{ inputs.app_name }}
+  IMAGE_NAME: asia-northeast2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.SERVICE_NAME }}/m-league-data-fun-app
+  PORT: 8501
 
 permissions:
   id-token: write
@@ -67,7 +57,7 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
       - name: Deploy Cloud Run for Demo App
         run: |
-          gcloud run deploy ${{ inputs.app_name }} \
+          gcloud run deploy m-league-data-fun-app \
           --image ${{ env.APP_IMAGE_NAME }}:latest \
           --region=asia-northeast2 \
           --platform managed \
@@ -78,4 +68,4 @@ jobs:
           --memory=512Mi \
           --cpu=1 \
           --quiet \
-          --port ${{ inputs.port }}
+          --port ${{ env.PORT }}
