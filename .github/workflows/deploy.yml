@@ -19,24 +19,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
       - id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCLOUD_AUTH }}
-
       - name: Setup Google Cloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           service_account_key: ${{ secrets.GCLOUD_AUTH }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-
       - name: Configure Docker
         run: gcloud auth configure-docker asia-northeast2-docker.pkg.dev
-
       - name: Build Docker image
         run: docker build --platform linux/amd64 -t ${{ env.IMAGE_NAME }}:latest -f Dockerfile .
-
       - name: Push Docker image
         run: docker push ${{ env.IMAGE_NAME }}:latest
 
@@ -58,7 +53,7 @@ jobs:
       - name: Deploy Cloud Run for Demo App
         run: |
           gcloud run deploy m-league-data-fun-app \
-          --image ${{ env.APP_IMAGE_NAME }}:latest \
+          --image ${{ env.IMAGE_NAME }}:latest \
           --region=asia-northeast2 \
           --platform managed \
           --min-instances=0 \
